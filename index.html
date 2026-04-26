@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NutriBalance Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ── SIDEBAR IZQUIERDO: Paciente + Macros ── -->
+  <aside class="sidebar">
+
+    <div class="brand">
+      <span class="brand-icon">✦</span>
+      <span class="brand-name">NutriBalance</span>
+    </div>
+
+    <!-- Paciente activo -->
+    <div class="patient-section">
+      <p class="label">Paciente actual</p>
+      <div class="patient-card" id="patientCard">
+        <div class="patient-avatar" id="pAvatar">🏋️</div>
+        <div>
+          <div class="patient-name" id="pName">Deportista</div>
+          <div class="patient-sub" id="pGoal">Cargando...</div>
+        </div>
+        <div class="patient-badge" id="pBadge">1/3</div>
+      </div>
+
+      <!-- Progreso pacientes -->
+      <div class="patient-steps" id="patientSteps"></div>
+    </div>
+
+    <!-- Objetivos -->
+    <div class="targets-section">
+      <p class="label">Objetivos macro</p>
+      <div class="targets-grid" id="targetsGrid"></div>
+    </div>
+
+    <!-- Barras de macros -->
+    <div class="macro-bars">
+      <p class="label">Distribución actual</p>
+
+      <div class="macro-row">
+        <div class="macro-row-top">
+          <span class="macro-name carbs-color">Carbohidratos</span>
+          <span class="macro-nums"><span id="carbG">0g</span> · <span id="carbPct">0%</span></span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill carbs" id="carbBar" style="width:0%"></div>
+          <div class="bar-marker" id="carbMark"></div>
+        </div>
+        <div class="bar-legend">
+          <span>0</span><span id="carbTarget">meta: 0%</span><span>100</span>
+        </div>
+      </div>
+
+      <div class="macro-row">
+        <div class="macro-row-top">
+          <span class="macro-name prot-color">Proteínas</span>
+          <span class="macro-nums"><span id="protG">0g</span> · <span id="protPct">0%</span></span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill prot" id="protBar" style="width:0%"></div>
+          <div class="bar-marker" id="protMark"></div>
+        </div>
+        <div class="bar-legend">
+          <span>0</span><span id="protTarget">meta: 0%</span><span>100</span>
+        </div>
+      </div>
+
+      <div class="macro-row">
+        <div class="macro-row-top">
+          <span class="macro-name fat-color">Grasas</span>
+          <span class="macro-nums"><span id="fatG">0g</span> · <span id="fatPct">0%</span></span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill fat" id="fatBar" style="width:0%"></div>
+          <div class="bar-marker" id="fatMark"></div>
+        </div>
+        <div class="bar-legend">
+          <span>0</span><span id="fatTarget">meta: 0%</span><span>100</span>
+        </div>
+      </div>
+
+      <!-- Calorías totales -->
+      <div class="calories-card">
+        <div class="cal-label">Calorías totales</div>
+        <div class="cal-value" id="totalCal">0 <span class="cal-unit">kcal</span></div>
+      </div>
+    </div>
+
+    <!-- Acciones -->
+    <div class="sidebar-actions">
+      <button class="btn-verify" onclick="checkBalance()">Verificar balance</button>
+      <button class="btn-reset" onclick="resetGame()">↺ Reiniciar</button>
+    </div>
+
+    <div class="result-box" id="result"></div>
+
+  </aside>
+
+  <!-- ── PANEL CENTRAL: Buscador + Alimentos agregados ── -->
+  <main class="main-panel">
+
+    <div class="main-header">
+      <h1 class="main-title">Construye el plato</h1>
+      <p class="main-sub">Busca alimentos reales y ajusta los gramos</p>
+    </div>
+
+    <!-- Buscador -->
+    <div class="search-area">
+      <div class="search-box">
+        <span class="search-icon">⌕</span>
+        <input
+          type="text"
+          id="searchInput"
+          class="search-input"
+          placeholder="Buscar alimento... (ej: arroz, pollo, aguacate)"
+          autocomplete="off"
+        />
+        <button class="search-clear" id="clearBtn" onclick="clearSearch()" style="display:none">×</button>
+      </div>
+      <div class="search-results" id="searchResults"></div>
+    </div>
+
+    <!-- Accesos rápidos -->
+    <div class="quick-section">
+      <p class="label">Accesos rápidos</p>
+      <div class="quick-grid" id="quickGrid"></div>
+    </div>
+
+    <!-- Canvas animado del plato -->
+    <div class="canvas-section">
+      <div class="canvas-header">
+        <p class="label">Plato animado</p>
+        <span class="plate-count" id="plateCount">0 alimentos</span>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="plateCanvas"></canvas>
+      </div>
+    </div>
+
+    <!-- Lista detallada -->
+    <div class="plate-section">
+      <p class="label">Detalle del plato</p>
+      <div class="plate-list" id="plateList">
+        <div class="plate-empty">
+          <div class="plate-empty-icon">🍽</div>
+          <p>El plato está vacío</p>
+          <p class="plate-empty-sub">Busca y agrega alimentos arriba</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ── PANEL DERECHO: Detalle nutricional ── -->
+  <aside class="detail-panel">
+
+    <div class="detail-header">
+      <p class="label">Detalle nutricional</p>
+    </div>
+
+    <!-- Donut chart -->
+    <div class="donut-wrap">
+      <svg class="donut" viewBox="0 0 120 120" id="donutSvg">
+        <circle class="donut-bg" cx="60" cy="60" r="46"/>
+        <circle class="donut-carbs" cx="60" cy="60" r="46" id="donutCarbs"/>
+        <circle class="donut-prot"  cx="60" cy="60" r="46" id="donutProt"/>
+        <circle class="donut-fat"   cx="60" cy="60" r="46" id="donutFat"/>
+      </svg>
+      <div class="donut-center">
+        <div class="donut-cal" id="donutCal">0</div>
+        <div class="donut-unit">kcal</div>
+      </div>
+    </div>
+
+    <!-- Leyenda donut -->
+    <div class="donut-legend">
+      <div class="legend-item">
+        <span class="legend-dot carbs-bg"></span>
+        <span class="legend-label">Carbos</span>
+        <span class="legend-val carbs-color" id="lgCarbs">0%</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-dot prot-bg"></span>
+        <span class="legend-label">Proteína</span>
+        <span class="legend-val prot-color" id="lgProt">0%</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-dot fat-bg"></span>
+        <span class="legend-label">Grasas</span>
+        <span class="legend-val fat-color" id="lgFat">0%</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Stats detallados -->
+    <p class="label">Resumen por macros</p>
+    <div class="stats-grid">
+      <div class="stat-card carbs-border">
+        <div class="stat-label">Carbohidratos</div>
+        <div class="stat-value carbs-color" id="stCarbs">0g</div>
+        <div class="stat-kcal" id="stCarbsKcal">0 kcal</div>
+      </div>
+      <div class="stat-card prot-border">
+        <div class="stat-label">Proteínas</div>
+        <div class="stat-value prot-color" id="stProt">0g</div>
+        <div class="stat-kcal" id="stProtKcal">0 kcal</div>
+      </div>
+      <div class="stat-card fat-border">
+        <div class="stat-label">Grasas</div>
+        <div class="stat-value fat-color" id="stFat">0g</div>
+        <div class="stat-kcal" id="stFatKcal">0 kcal</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Info alimento seleccionado -->
+    <p class="label">Info por 100g</p>
+    <div class="food-info-box" id="foodInfoBox">
+      <div class="food-info-empty">Selecciona un alimento del plato para ver su detalle</div>
+    </div>
+
+  </aside>
+
+  <script src="data.js"></script>
+  <script src="api.js"></script>
+  <script src="plate.js"></script>
+  <script src="game.js"></script>
+
+</body>
+</html>
