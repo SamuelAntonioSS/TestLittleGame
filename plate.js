@@ -53,8 +53,19 @@ const PlateCanvas = (() => {
   // ── Init ──────────────────────────────────────────────────────────────────
   function init() {
     canvas = document.getElementById('plateCanvas');
-    canvas.width  = CFG.W;
-    canvas.height = CFG.H;
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile) {
+      const wrap  = canvas.parentElement;
+      const availW = Math.min(wrap.clientWidth - 20, 340);
+      const scale  = availW / CFG.W;
+      canvas.width  = CFG.W;
+      canvas.height = CFG.H;
+      canvas.style.width  = availW + 'px';
+      canvas.style.height = Math.round(CFG.H * scale) + 'px';
+    } else {
+      canvas.width  = CFG.W;
+      canvas.height = CFG.H;
+    }
     ctx = canvas.getContext('2d');
     loop();
   }

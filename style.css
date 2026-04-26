@@ -794,3 +794,172 @@ body {
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* ══════════════════════════════════════
+   FOOTER
+══════════════════════════════════════ */
+.site-footer {
+  display: none; /* se muestra solo en móvil por defecto, en desktop va al sidebar */
+}
+
+.footer-inner {
+  text-align: center;
+  padding: 20px 16px 28px;
+  border-top: 0.5px solid var(--border);
+  margin-top: 10px;
+}
+
+.footer-made {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.footer-name {
+  font-family: 'Fraunces', serif;
+  font-size: 13px;
+  color: rgba(255,255,255,0.6);
+  font-style: italic;
+}
+
+.footer-dot {
+  color: var(--carbs);
+  margin: 0 4px;
+}
+
+/* Footer en sidebar (desktop) */
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 0.5px solid var(--border);
+  text-align: center;
+}
+
+.sidebar-footer .footer-made {
+  font-size: 10px;
+  color: rgba(255,255,255,0.2);
+  line-height: 1.8;
+}
+
+.sidebar-footer .footer-name {
+  font-family: 'Fraunces', serif;
+  font-size: 11px;
+  color: rgba(255,255,255,0.35);
+  font-style: italic;
+}
+
+/* ══════════════════════════════════════
+   RESPONSIVE — MÓVIL
+══════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  html, body {
+    height: auto;
+    overflow: auto;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  /* Sidebar arriba, compacto */
+  .sidebar {
+    border-right: none;
+    border-bottom: 0.5px solid var(--border);
+    padding: 16px 14px;
+    overflow: visible;
+  }
+
+  .brand { margin-bottom: 14px; }
+
+  .patient-card { padding: 10px 12px; }
+  .patient-name { font-size: 14px; }
+
+  .targets-grid { gap: 6px; }
+  .tc-val { font-size: 13px; }
+
+  .macro-bars { margin-bottom: 14px; }
+
+  .calories-card { padding: 10px; }
+  .cal-value { font-size: 22px; }
+
+  .sidebar-actions { flex-direction: row; }
+  .btn-verify { font-size: 12px; padding: 10px; }
+  .btn-reset  { font-size: 12px; padding: 10px 12px; }
+
+  /* Ocultar footer del sidebar en móvil */
+  .sidebar-footer { display: none; }
+
+  /* Panel central ocupa todo */
+  .main-panel {
+    padding: 18px 14px 24px;
+    overflow: visible;
+  }
+
+  .main-title { font-size: 20px; }
+
+  /* Canvas más chico en móvil */
+  #plateCanvas {
+    width: 100% !important;
+    height: auto !important;
+    max-width: 340px;
+  }
+
+  .canvas-wrap {
+    padding: 6px;
+  }
+
+  /* Quick grid: 4 columnas en móvil */
+  .quick-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+
+  .quick-btn { padding: 8px 4px 6px; }
+  .qb-emoji  { font-size: 18px; }
+  .qb-name   { font-size: 9px; }
+
+  /* Plate items más compactos */
+  .plate-item {
+    grid-template-columns: auto 1fr auto auto;
+    gap: 8px;
+    padding: 10px 10px;
+  }
+
+  .pi-emoji  { font-size: 18px; }
+  .pi-name   { font-size: 12px; }
+  .pi-macros { font-size: 9px; }
+
+  .gram-input { width: 34px; font-size: 12px; }
+  .gram-btn   { font-size: 14px; }
+
+  /* Panel derecho va abajo */
+  .detail-panel {
+    border-left: none;
+    border-top: 0.5px solid var(--border);
+    padding: 18px 14px 16px;
+    overflow: visible;
+  }
+
+  .donut-wrap { width: 120px; height: 120px; }
+  .donut-cal  { font-size: 18px; }
+
+  /* Footer visible en móvil */
+  .site-footer { display: block; }
+
+}
+
+@media (max-width: 400px) {
+  .quick-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .plate-item {
+    grid-template-columns: auto 1fr auto;
+  }
+
+  .gram-control { display: none; }
+}
