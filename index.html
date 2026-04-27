@@ -19,6 +19,50 @@
       <span class="brand-name">NutriBalance</span>
     </div>
 
+    <!-- HUD -->
+    <div class="game-hud">
+      <div class="hud-score">
+        <div class="hud-val" id="scoreVal">0</div>
+        <div class="hud-label">puntos</div>
+      </div>
+      <div class="hud-divider"></div>
+      <div class="hud-level">
+        <div class="hud-val" id="levelVal">Nv.1</div>
+        <div class="hud-label" id="levelName">Junior</div>
+      </div>
+      <div class="hud-divider"></div>
+      <div class="hud-streak">
+        <div class="hud-val" id="streakVal">×1</div>
+        <div class="hud-label">racha</div>
+      </div>
+    </div>
+
+    <!-- XP Bar -->
+    <div class="xp-bar-wrap">
+      <div class="xp-bar-track">
+        <div class="xp-bar-fill" id="xpBar" style="width:0%"></div>
+      </div>
+      <span class="xp-label" id="xpLabel">0 / 100 XP</span>
+    </div>
+
+    <!-- Temporizador -->
+    <div class="timer-wrap" id="timerWrap">
+      <div class="timer-ring">
+        <svg viewBox="0 0 60 60" class="timer-svg">
+          <circle class="timer-bg" cx="30" cy="30" r="26"/>
+          <circle class="timer-arc" cx="30" cy="30" r="26" id="timerArc"/>
+        </svg>
+        <div class="timer-center">
+          <span class="timer-num" id="timerNum">60</span>
+          <span class="timer-unit">seg</span>
+        </div>
+      </div>
+      <div class="timer-info">
+        <div class="timer-title">Tiempo restante</div>
+        <div class="timer-sub" id="timerSub">¡Arma el plato!</div>
+      </div>
+    </div>
+
     <!-- Paciente activo -->
     <div class="patient-section">
       <p class="label">Paciente actual</p>
@@ -28,10 +72,8 @@
           <div class="patient-name" id="pName">Deportista</div>
           <div class="patient-sub" id="pGoal">Cargando...</div>
         </div>
-        <div class="patient-badge" id="pBadge">1/3</div>
+        <div class="patient-mood" id="pMood">😐</div>
       </div>
-
-      <!-- Progreso pacientes -->
       <div class="patient-steps" id="patientSteps"></div>
     </div>
 
@@ -249,6 +291,81 @@
       </div>
     </div>
   </footer>
+
+  <!-- Modal de bienvenida -->
+  <div class="modal-overlay visible" id="welcomeModal">
+    <div class="modal-box modal-box--welcome">
+      <div class="welcome-logo">
+        <span class="brand-icon">✦</span>
+        <span class="welcome-brand">NutriBalance</span>
+      </div>
+
+      <p class="welcome-tagline">El juego de nutrición clínica</p>
+
+      <div class="welcome-steps">
+        <div class="wstep">
+          <div class="wstep-icon">👨‍⚕️</div>
+          <div class="wstep-text">
+            <strong>Recibís un paciente</strong>
+            <span>Cada uno tiene objetivos nutricionales distintos según su condición</span>
+          </div>
+        </div>
+        <div class="wstep">
+          <div class="wstep-icon">🍽</div>
+          <div class="wstep-text">
+            <strong>Armá su plato</strong>
+            <span>Buscá alimentos reales o usá los accesos rápidos. Ajustá los gramos a tu criterio</span>
+          </div>
+        </div>
+        <div class="wstep">
+          <div class="wstep-icon">⚖️</div>
+          <div class="wstep-text">
+            <strong>Equilibrá los macros</strong>
+            <span>Carbohidratos, proteínas y grasas deben estar cerca del objetivo del paciente</span>
+          </div>
+        </div>
+        <div class="wstep">
+          <div class="wstep-icon">⏱</div>
+          <div class="wstep-text">
+            <strong>Tenés 60 segundos</strong>
+            <span>Cuanto más rápido lo logrés, más puntos ganás. ¡La racha multiplica tus puntos!</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="welcome-tip">
+        💡 Mirá el humor del paciente — te indica si vas por buen camino
+      </div>
+
+      <button class="modal-btn" onclick="closeWelcome()">¡Empezar a jugar!</button>
+    </div>
+  </div>
+
+  <!-- Modal de éxito -->
+  <div class="modal-overlay" id="successModal">
+    <div class="modal-box">
+      <div class="modal-emoji" id="modalEmoji">🎉</div>
+      <div class="modal-title" id="modalTitle">¡Paciente satisfecho!</div>
+      <div class="modal-sub" id="modalSub"></div>
+      <div class="modal-points" id="modalPoints"></div>
+      <div class="modal-stats" id="modalStats"></div>
+      <button class="modal-btn" id="modalBtn" onclick="closeModal()">Siguiente paciente →</button>
+    </div>
+  </div>
+
+  <!-- Overlay de tiempo agotado -->
+  <div class="modal-overlay" id="timeoutModal">
+    <div class="modal-box modal-box--fail">
+      <div class="modal-emoji">⏰</div>
+      <div class="modal-title">¡Tiempo agotado!</div>
+      <div class="modal-sub" id="timeoutSub">El paciente se fue sin comer bien</div>
+      <div class="modal-points" id="timeoutPoints"></div>
+      <button class="modal-btn modal-btn--retry" onclick="closeTimeoutModal()">Intentar de nuevo</button>
+    </div>
+  </div>
+
+  <!-- Notificación flotante de puntos -->
+  <div class="float-notif" id="floatNotif"></div>
 
   <script src="data.js"></script>
   <script src="api.js"></script>
