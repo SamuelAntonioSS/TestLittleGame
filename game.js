@@ -28,6 +28,8 @@ let streak        = 1;
 let timerSec      = TIMER_SECONDS;
 let timerInterval = null;
 let gameOver      = false;
+let paused        = false;
+let timerMode     = true;   // true = con tiempo, false = libre
 
 // ── Init ──────────────────────────────────────────────────────────
 function init() {
@@ -37,9 +39,20 @@ function init() {
   // El timer arranca cuando el jugador cierra el modal de bienvenida
 }
 
-function closeWelcome() {
+function closeWelcome(withTimer) {
+  timerMode = withTimer;
   document.getElementById('welcomeModal').classList.remove('visible');
-  startTimer();
+  const tw = document.getElementById('timerWrap');
+  const pb = document.getElementById('pauseBtn');
+  const rb = document.getElementById('resetTimerBtn');
+  if (!timerMode) {
+    tw.classList.add('hidden');
+    if (pb) pb.style.display = 'none';
+    if (rb) rb.style.display = 'none';
+  } else {
+    tw.classList.remove('hidden');
+    startTimer();
+  }
 }
 
 // ── Paciente ──────────────────────────────────────────────────────
@@ -120,13 +133,51 @@ function startTimer() {
   stopTimer();
   timerSec = TIMER_SECONDS;
   gameOver = false;
+  paused   = false;
+  setPauseUI(false);
   renderTimer();
+  if (!timerMode) return;
   timerInterval = setInterval(() => {
     timerSec--;
     renderTimer();
     updateTimerSub();
     if (timerSec <= 0) { stopTimer(); onTimeOut(); }
   }, 1000);
+}
+
+
+// ── Pausa ─────────────────────────────────────────────────────────
+function togglePause() {
+  if (gameOver) return;
+  paused = !paused;
+  setPauseUI(paused);
+
+  if (paused) {
+    stopTimer();
+  } else {
+    // Reanudar: reiniciar el interval sin resetear timerSec
+    timerInterval = setInterval(() => {
+      timerSec--;
+      renderTimer();
+      updateTimerSub();
+      if (timerSec <= 0) { stopTimer(); onTimeOut(); }
+    }, 1000);
+  }
+}
+
+function setPauseUI(isPaused) {
+  const btn     = document.getElementById('pauseBtn');
+  const overlay = document.getElementById('pauseOverlay');
+  if (!btn || !overlay) return;
+  btn.textContent = isPaused ? '▶' : '⏸';
+  btn.classList.toggle('paused', isPaused);
+  overlay.classList.toggle('visible', isPaused);
+}
+
+function resetTimer() {
+  if (!timerMode || gameOver) return;
+  startTimer();
+  showFloatNotif('⏱ Tiempo reiniciado');
 }
 
 function stopTimer() {
@@ -153,6 +204,7 @@ function updateTimerSub() {
 }
 
 function onTimeOut() {
+  if (!timerMode) return;
   gameOver = true;
   streak   = 1;
   updateStreakDisplay();
@@ -271,7 +323,7 @@ function clearSearch() {
 
 // ── Plato ─────────────────────────────────────────────────────────
 function addFoodToPlate(name, emoji, per100) {
-  if (gameOver) return;
+  if (gameOver || paused) return;
   const id = ++plateIdCounter;
   plate.push({ id, name, emoji, grams: 100, per100 });
   PlateCanvas.addFood(emoji);
@@ -444,7 +496,7 @@ function checkBalance() {
 
     const btn = document.getElementById('modalBtn');
     if (isLast) { btn.textContent = '🔄 Jugar de nuevo'; btn.onclick = () => { closeModal(); fullReset(); }; }
-    else        { btn.textContent = 'Siguiente paciente →'; btn.onclick = closeModal; }
+    else        { btn.textContent = 'Ver dato nutricional →'; btn.onclick = () => { closeModal(); showFactModal(); }; }
 
     document.getElementById('successModal').classList.add('visible');
   } else {
@@ -485,7 +537,7 @@ function resetRound() {
   renderPlate(); updateAll(); renderFoodInfo(null);
   document.getElementById('result').style.display = 'none';
   loadPatient();
-  startTimer();
+  if (timerMode) startTimer();
 }
 
 function fullReset() {
@@ -505,3 +557,95 @@ function resetGame() {
 // ── Arrancar ──────────────────────────────────────────────────────
 init();
 updateDonut({ carbs: 0, protein: 0, fat: 0 });
+
+// ── Alimento personalizado (panel fijo) ──────────────────────────
+function toggleAddFood() {
+  const body  = document.getElementById('afpBody');
+  const arrow = document.getElementById('afpArrow');
+  const open  = body.classList.toggle('open');
+  arrow.classList.toggle('open', open);
+  if (open) {
+    // Limpiar al abrir
+    ['cf-name','cf-emoji','cf-carbs','cf-protein','cf-fat','cf-kcal'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    document.getElementById('cfPreview').style.display = 'none';
+  }
+}
+
+function updateFoodPreview() {
+  const name    = document.getElementById('cf-name').value.trim();
+  const emoji   = document.getElementById('cf-emoji').value.trim() || '🍽';
+  const carbs   = parseFloat(document.getElementById('cf-carbs').value)   || 0;
+  const protein = parseFloat(document.getElementById('cf-protein').value) || 0;
+  const fat     = parseFloat(document.getElementById('cf-fat').value)     || 0;
+  const kcal    = parseFloat(document.getElementById('cf-kcal').value)    || Math.round(carbs*4 + protein*4 + fat*9);
+
+  const preview = document.getElementById('cfPreview');
+  if (!name) { preview.style.display = 'none'; return; }
+
+  preview.style.display = 'flex';
+  document.getElementById('fpEmoji').textContent  = emoji;
+  document.getElementById('fpName').textContent   = name;
+  document.getElementById('fpMacros').textContent = 'C:' + carbs + 'g P:' + protein + 'g G:' + fat + 'g · ' + kcal + ' kcal';
+}
+
+function saveCustomFood() {
+  const name    = document.getElementById('cf-name').value.trim();
+  const emoji   = document.getElementById('cf-emoji').value.trim() || '🍽';
+  const carbs   = parseFloat(document.getElementById('cf-carbs').value)   || 0;
+  const protein = parseFloat(document.getElementById('cf-protein').value) || 0;
+  const fat     = parseFloat(document.getElementById('cf-fat').value)     || 0;
+  const kcalIn  = parseFloat(document.getElementById('cf-kcal').value);
+  const kcal    = kcalIn || Math.round(carbs*4 + protein*4 + fat*9);
+
+  if (!name) { showFloatNotif('⚠ Ingresá un nombre'); return; }
+  if (carbs === 0 && protein === 0 && fat === 0) { showFloatNotif('⚠ Ingresá al menos un macro'); return; }
+
+  const food = { carbs, protein, fat, kcal };
+  // Cerrar panel
+  document.getElementById('afpBody').classList.remove('open');
+  document.getElementById('afpArrow').classList.remove('open');
+  addFoodToPlate(name, emoji, food);
+
+  // También guardar en accesos rápidos temporalmente
+  const key = 'custom_' + Date.now();
+  QUICK_FOODS.unshift({ key, emoji, label: name.length > 10 ? name.substring(0,10)+'…' : name, carbs, protein, fat, kcal });
+  buildQuickGrid();
+  showFloatNotif('✓ ' + name + ' agregado');
+}
+
+// ── Modal dato nutricional ────────────────────────────────────────
+function showFactModal() {
+  const factData = PATIENT_FACTS[currentPatient - 1];
+  if (!factData) { resetRound(); return; }
+
+  // Crear modal dinámicamente si no existe
+  let modal = document.getElementById('factModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'factModal';
+    modal.className = 'modal-overlay';
+    document.body.appendChild(modal);
+  }
+
+  modal.innerHTML = '<div class="modal-box modal-box--fact">'
+    + '<div class="fact-header">'
+    + '<span class="fact-badge">💡 Dato nutricional</span>'
+    + '</div>'
+    + '<div class="fact-title">' + factData.title + '</div>'
+    + '<div class="fact-list">'
+    + factData.facts.map(f => '<div class="fact-item">' + f + '</div>').join('')
+    + '</div>'
+    + '<button class="modal-btn" onclick="closeFactModal()">Siguiente paciente →</button>'
+    + '</div>';
+
+  modal.classList.add('visible');
+}
+
+function closeFactModal() {
+  const modal = document.getElementById('factModal');
+  if (modal) modal.classList.remove('visible');
+  resetRound();
+}

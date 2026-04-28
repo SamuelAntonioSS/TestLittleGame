@@ -1,4 +1,35 @@
 // ── Pacientes ────────────────────────────────────────────────────────────────
+// ── Datos nutricionales por paciente (se muestran al completar) ──────────────
+const PATIENT_FACTS = [
+  {
+    title: "¿Por qué importa la nutrición del deportista?",
+    facts: [
+      "🏋️ Las proteínas reparan el tejido muscular después del ejercicio intenso.",
+      "⚡ Los carbohidratos son el combustible principal durante el entrenamiento.",
+      "🔥 Una distribución incorrecta puede reducir el rendimiento hasta un 30%.",
+      "💧 La hidratación y los electrolitos son tan importantes como los macros."
+    ]
+  },
+  {
+    title: "Nutrición y salud cardíaca",
+    facts: [
+      "❤️ Reducir grasas saturadas disminuye el riesgo de enfermedades cardíacas.",
+      "🐟 Los ácidos grasos omega-3 ayudan a reducir la inflamación cardiovascular.",
+      "🥦 La fibra soluble ayuda a reducir el colesterol LDL en sangre.",
+      "🚫 El exceso de sodio es uno de los principales factores de hipertensión."
+    ]
+  },
+  {
+    title: "El equilibrio como estilo de vida",
+    facts: [
+      "⚖️ Una dieta balanceada reduce el riesgo de diabetes tipo 2 hasta en un 58%.",
+      "🧠 Los macronutrientes correctos mejoran la concentración y el estado de ánimo.",
+      "🌿 Incluir variedad de alimentos garantiza micronutrientes esenciales.",
+      "📊 El equilibrio de macros es más importante que contar calorías de forma aislada."
+    ]
+  }
+];
+
 const PATIENTS = [
   {
     name: "Deportista",

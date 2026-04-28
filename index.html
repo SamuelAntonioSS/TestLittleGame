@@ -61,6 +61,15 @@
         <div class="timer-title">Tiempo restante</div>
         <div class="timer-sub" id="timerSub">¡Arma el plato!</div>
       </div>
+      <button class="pause-btn" id="pauseBtn" onclick="togglePause()" title="Pausar">⏸</button>
+      <button class="reset-timer-btn" id="resetTimerBtn" onclick="resetTimer()" title="Reiniciar tiempo">↺</button>
+    </div>
+
+    <!-- Overlay de pausa -->
+    <div class="pause-overlay" id="pauseOverlay">
+      <div class="pause-icon">⏸</div>
+      <div class="pause-text">Juego pausado</div>
+      <button class="pause-resume-btn" onclick="togglePause()">▶ Continuar</button>
     </div>
 
     <!-- Paciente activo -->
@@ -180,8 +189,57 @@
 
     <!-- Accesos rápidos -->
     <div class="quick-section">
-      <p class="label">Accesos rápidos</p>
+      <div class="quick-header">
+        <p class="label">Accesos rápidos</p>
+      </div>
       <div class="quick-grid" id="quickGrid"></div>
+
+      <!-- Panel fijo: agregar alimento personalizado -->
+      <div class="add-food-panel" id="addFoodPanel">
+        <div class="afp-header" onclick="toggleAddFood()">
+          <div class="afp-title">
+            <span class="afp-icon">＋</span>
+            <span>Agregar alimento propio</span>
+          </div>
+          <span class="afp-arrow" id="afpArrow">›</span>
+        </div>
+        <div class="afp-body" id="afpBody">
+          <div class="form-grid">
+            <div class="form-field form-field--full">
+              <label class="form-label">Nombre</label>
+              <input class="form-input" type="text" id="cf-name" placeholder="ej: Quinoa cocida" oninput="updateFoodPreview()"/>
+            </div>
+            <div class="form-field form-field--half">
+              <label class="form-label">Emoji</label>
+              <input class="form-input" type="text" id="cf-emoji" placeholder="🥗" maxlength="2" oninput="updateFoodPreview()"/>
+            </div>
+            <div class="form-field form-field--half">
+              <label class="form-label">Kcal</label>
+              <input class="form-input" type="number" id="cf-kcal" placeholder="Auto" min="0" oninput="updateFoodPreview()"/>
+            </div>
+            <div class="form-field">
+              <label class="form-label carbs-color">Carbos (g)</label>
+              <input class="form-input" type="number" id="cf-carbs" placeholder="0" min="0" oninput="updateFoodPreview()"/>
+            </div>
+            <div class="form-field">
+              <label class="form-label prot-color">Proteína (g)</label>
+              <input class="form-input" type="number" id="cf-protein" placeholder="0" min="0" oninput="updateFoodPreview()"/>
+            </div>
+            <div class="form-field form-field--full">
+              <label class="form-label fat-color">Grasas (g)</label>
+              <input class="form-input" type="number" id="cf-fat" placeholder="0" min="0" oninput="updateFoodPreview()"/>
+            </div>
+          </div>
+          <div class="form-preview" id="cfPreview" style="display:none">
+            <span class="fp-label">Vista previa</span>
+            <span id="fpEmoji">🍽</span>
+            <span id="fpName">—</span>
+            <span class="fp-sep">·</span>
+            <span id="fpMacros" class="fp-macros">—</span>
+          </div>
+          <button class="afp-save-btn" onclick="saveCustomFood()">Agregar al plato →</button>
+        </div>
+      </div>
     </div>
 
     <!-- Canvas animado del plato -->
@@ -337,7 +395,21 @@
         💡 Mirá el humor del paciente — te indica si vas por buen camino
       </div>
 
-      <button class="modal-btn" onclick="closeWelcome()">¡Empezar a jugar!</button>
+      <div class="welcome-mode">
+        <p class="welcome-mode-label">¿Cómo querés jugar?</p>
+        <div class="welcome-mode-btns">
+          <button class="mode-btn mode-btn--timer" onclick="closeWelcome(true)">
+            <span class="mode-icon">⏱</span>
+            <span class="mode-name">Con tiempo</span>
+            <span class="mode-desc">60 seg por paciente</span>
+          </button>
+          <button class="mode-btn mode-btn--free" onclick="closeWelcome(false)">
+            <span class="mode-icon">🧘</span>
+            <span class="mode-name">Sin tiempo</span>
+            <span class="mode-desc">A tu ritmo</span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
